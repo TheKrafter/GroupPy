@@ -8,3 +8,4 @@ client.authenticate()
 
 client.get_groups()
 
+print(f'Groups: \n {self.groups}')
