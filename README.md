@@ -5,6 +5,7 @@ A Python Library for interacting with the GroupMe Rest API, intended for clients
 ## Helpful Documentation links:
 OAuth - https://dev.groupme.com/tutorials/oauth
 REST API - https://dev.groupme.com/docs/v3
+How Responses are Structured - https://dev.groupme.com/docs/responses
 
 REST3client - https://github.com/soda480/rest3client
 
