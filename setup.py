@@ -6,7 +6,7 @@ setup(
     description='A Python Library for interacting with the GroupMe Rest API ',
     author='TheKrafter',
     license='GPL-3.0',
-    install_requires=['rest3client', 'webbrowser'], # https://github.com/soda480/rest3client
+    install_requires=['rest3client', 'webbrowser', 'flask'], # https://github.com/soda480/rest3client
     setup_requires=['setuptools', 'pytest-runner'],
     tests_require=['pytest'],
     test_suite='tests',
