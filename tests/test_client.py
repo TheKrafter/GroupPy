@@ -1,10 +1,15 @@
-from grouppy import client
+from grouppy import GroupMeClient
 
-token = input('GroupMe Client ID: ')
+token = input('\nGroupMe Client ID: ')
 
-client  = GroupMeClient(token)
+client  = GroupMeClient(token, oauth_wait_time=30)
 
-client.authenticate()
+print(f'You have {client.oauth_wait_time} seconds to authenticate!')
+try:
+    client.authenticate()
+except:
+    print('Authentication Failed!')
+    exit()
 
 client.get_groups()
 
