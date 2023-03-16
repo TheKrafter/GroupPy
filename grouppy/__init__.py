@@ -52,7 +52,7 @@ class GroupMeClient:
 
         
         # Wait for oauth to complete, or to be told it's done.
-        if self.oauth_wait_time > 0:
+        if self.oauth_wait_time <= 0:
             self.oauth_wait_time_remaining = self.oauth_wait_time
             for i in range(self.oauth_wait_time):
                 time.sleep(1)
@@ -64,6 +64,10 @@ class GroupMeClient:
 
         # Check if authentication was completed
         if self.access_token == None:
+            if self.oauth_wait_time > 0:
+                message = 'User did not finish authentication within the timeout.'
+            else:
+                message = 'User did not finish authentication'
             webserver.kill()
             raise UserDidNotAuthenticate('User did not finish authentication within the timeout.')
             return False
