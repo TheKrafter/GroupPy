@@ -9,7 +9,7 @@ class UserDidNotAuthenticate(Exception):
     pass
 
 class GroupMeClient:
-    def __init__(self, client_id, oauth_wait_time=60, access_token=None, app_name='GroupPy'):
+    def __init__(self, client_id, oauth_wait_time=60, oauth_wait_till_success=True, access_token=None, app_name='GroupPy'):
         # Establish URL
         self.api = RESTclient('https://api.groupme.com/v3')
         self.client_id = client_id
@@ -18,6 +18,7 @@ class GroupMeClient:
         self.oauth_wait_time = oauth_wait_time
         self.access_token = access_token
         self.app_name = app_name
+        self.oauth_wait_till_success = oauth_wait_till_success
 
     def authenticate(self):
         """ Authenticate with GroupMe """
@@ -44,7 +45,7 @@ class GroupMeClient:
         def oauth():
             args = request.args
             self.access_token = args.get('access_token')
-            print(f'self.access_token = {self.access_token}')
+            #print(f'self.access_token = {self.access_token}')
             return html_success_page.replace('[[token]]', self.access_token)
         # Start Webserver
         webserver = Process(target=self.flask_server.run, kwargs=dict(host='127.0.0.1', port='8089'))
@@ -52,7 +53,15 @@ class GroupMeClient:
 
         
         # Wait for oauth to complete, or to be told it's done.
-        if self.oauth_wait_time <= 0:
+        if self.oauth_wait_till_success:
+            #count = 0
+            while self.access_token == None:
+                time.sleep(1)
+                #count += 1
+                #print(f'[{count}]: Not authenticated yet...')
+                #print(f'[{count}]: Access Token: {self.access_token}')
+            print('Authentication completed!')
+        elif self.oauth_wait_time <= 0:
             self.oauth_wait_time_remaining = self.oauth_wait_time
             for i in range(self.oauth_wait_time):
                 time.sleep(1)
@@ -64,7 +73,9 @@ class GroupMeClient:
 
         # Check if authentication was completed
         if self.access_token == None:
-            if self.oauth_wait_time > 0:
+            if self.oauth_wait_till_success:
+                message = 'User appeared to finish authentication, but didnt! (This should never happen)'
+            elif self.oauth_wait_time > 0:
                 message = 'User did not finish authentication within the timeout.'
             else:
                 message = 'User did not finish authentication'
