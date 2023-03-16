@@ -3,6 +3,7 @@ import webbrowser # For opening browser during OAuth
 from flask import Flask, request # For accepting oauth
 import time # to wait for oauth
 from multiprocessing import Process # run things simultaneously
+from guli import GuliVariable
 
 # Exception for when the user did not authenticate
 class UserDidNotAuthenticate(Exception):
@@ -11,7 +12,8 @@ class UserDidNotAuthenticate(Exception):
 class GroupMeClient:
     def __init__(self, client_id, oauth_wait_time=60, oauth_wait_till_success=True, access_token=None, app_name='GroupPy'):
         # Establish URL
-        self.api = RESTclient('https://api.groupme.com/v3')
+        self.api_url = 'https://api.groupme.com/v3'
+        self.api = RESTclient(self.api_url)
         self.client_id = client_id
         
         # Some Settings:
@@ -23,6 +25,7 @@ class GroupMeClient:
     def authenticate(self):
         """ Authenticate with GroupMe """
         webbrowser.open(f'https://oauth.groupme.com/oauth/authorize?client_id={self.client_id}')
+        GuliVariable("grouppy.access_token").setValue(self.access_token)
 
         # Define Webserver
         html_success_page = f"""
@@ -36,7 +39,6 @@ class GroupMeClient:
                     <h3><strong>Success!</strong></h3>
                     <h4>You may now close this window.</h4>
                 </center>
-                <!-- Found Access Token: [[token]] -->
             </body>
         <html>
         """
@@ -44,9 +46,10 @@ class GroupMeClient:
         @self.flask_server.route('/oauth', methods=['GET'])
         def oauth():
             args = request.args
-            self.access_token = args.get('access_token')
-            #print(f'self.access_token = {self.access_token}')
-            return html_success_page.replace('[[token]]', self.access_token)
+            GuliVariable("grouppy.access_token").setValue(args.get('access_token'))
+            print(f'self.access_token = {self.access_token}')
+            return html_success_page
+        
         # Start Webserver
         webserver = Process(target=self.flask_server.run, kwargs=dict(host='127.0.0.1', port='8089'))
         webserver.start()
@@ -55,7 +58,7 @@ class GroupMeClient:
         # Wait for oauth to complete, or to be told it's done.
         if self.oauth_wait_till_success:
             #count = 0
-            while self.access_token == None:
+            while GuliVariable("grouppy.access_token").get() == None:
                 time.sleep(1)
                 #count += 1
                 #print(f'[{count}]: Not authenticated yet...')
@@ -72,10 +75,10 @@ class GroupMeClient:
                 time.sleep(1)
 
         # Check if authentication was completed
-        if self.access_token == None:
+        if GuliVariable("grouppy.access_token").get() == None:
             if self.oauth_wait_till_success:
                 message = 'User appeared to finish authentication, but didnt! (This should never happen)'
-            elif self.oauth_wait_time > 0:
+            elif self.oauth_wait_time <= 0:
                 message = 'User did not finish authentication within the timeout.'
             else:
                 message = 'User did not finish authentication'
@@ -87,13 +90,16 @@ class GroupMeClient:
         webserver.kill()
         webserver.join()
 
-        # Set new self.api with new token
         # Save token as variable
+        self.access_token = GuliVariable("grouppy.access_token").get()
+        GuliVariable("grouppy.access_token").setValue(None) # anc clear for security
+        # Set new self.api with new token
+        self.api = RESTclient(self.api_url, access_token=self.access_token)
+
     
     def authenticate_confirm(self):
         """ Confirm Authentication Instead of Waiting for timeout """
         self.authenticate_confirm = True
-
     
     def get_groups(self):
         """ Fetch Groups from the API """
