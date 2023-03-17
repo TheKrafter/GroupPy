@@ -1,4 +1,4 @@
-from rest3client import RESTclient # For API Requests
+import requests # For API Requests
 import webbrowser # For opening browser during OAuth
 from flask import Flask, request # For accepting oauth
 import time # to wait for oauth
@@ -13,7 +13,6 @@ class GroupMeClient:
     def __init__(self, client_id, oauth_wait_time=60, oauth_wait_till_success=True, access_token=None, app_name='GroupPy'):
         # Establish URL
         self.api_url = 'https://api.groupme.com/v3'
-        self.api = RESTclient(self.api_url)
         self.client_id = client_id
         
         # Some Settings:
@@ -93,19 +92,25 @@ class GroupMeClient:
         # Save token as variable
         self.access_token = GuliVariable("grouppy.access_token").get()
         GuliVariable("grouppy.access_token").setValue(None) # anc clear for security
-        # Set new self.api with new token
-        self.api = RESTclient(self.api_url, access_token=self.access_token)
-
     
     def authenticate_confirm(self):
         """ Confirm Authentication Instead of Waiting for timeout """
         self.authenticate_confirm = True
     
-    def get_groups(self):
+    def get_groups(self, entries=200, page=1):
         """ Fetch Groups from the API """
-        response = self.api.get('/groups', per_page='200')
-        self.groups = response['response']
+        parameters = { 'access_token' : self.access_token, 'per_page' : f'{entries}', 'page' : f'{page}'}
+        response_raw = requests.get(f'{self.api_url}/groups', params=parameters)
+        response = response_raw.json()
+        print('RESPONSE: \n' + str(response['response']))
+        pass
+        self.groups_raw = response['response']
         self.group_ids = []
-        for itm in self.groups:
-            self.group_ids.append(self.groups[itm]['id'])
+        self.groups = {}
+        for group in self.groups:
+            self.group_ids.append(self.groups_raw[group['id']])
+            group_id = group['id']
+            print(f'ID: { group_id }\nCONTENT: {group}')
+            self.groups[group['id']] = group
+
         
