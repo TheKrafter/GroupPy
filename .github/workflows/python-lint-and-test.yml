@@ -52,4 +52,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.GROUPPY_ACCESS_TOKEN }}
       run: |
         echo $ACCESS_TOKEN > ./access_token.txt
-        pytest
+        python3 setup.py pytest
