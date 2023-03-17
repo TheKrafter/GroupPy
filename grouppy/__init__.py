@@ -5,9 +5,11 @@ import time # to wait for oauth
 from multiprocessing import Process # run things simultaneously
 from guli import GuliVariable
 
-# Exception for when the user did not authenticate
+# Exceptions
 class UserDidNotAuthenticate(Exception):
-    pass
+    pass # if user authentication failed or timed out
+class InvalidResponse(Exception):
+    pass # if api response is invalid
 
 class GroupMeClient:
     def __init__(self, token, oauth_complete=False, oauth_wait_time=60, oauth_wait_till_success=True, app_name='GroupPy'):
@@ -108,13 +110,20 @@ class GroupMeClient:
         parameters = { 'access_token' : self.access_token, 'per_page' : f'{entries}', 'page' : f'{page}'}
         response_raw = requests.get(f'{self.api_url}/groups', params=parameters)
         response = response_raw.json()
-        self.groups_raw = response['response']
+        try:
+            self.groups_raw = response['response']
+        except KeyError:
+            try:
+                error_code = response['meta']['code']
+                error_list = sum(response['meta']['errors'])
+                raise InvalidResponse(f'{error_code}: {error_list}')
+            except KeyError:
+                raise InvalidResponse('API Response was invalid')
         self.group_ids = []
         self.groups = dict()
         for group in self.groups_raw:
             self.group_ids.append(group['id'])
             group_id = group['id']
-            print(f'ID: { group_id }\nCONTENT: {group}')
             self.groups[group['id']] = group
         return True
 
