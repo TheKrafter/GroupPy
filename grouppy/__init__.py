@@ -108,7 +108,6 @@ class GroupMeClient:
         parameters = { 'access_token' : self.access_token, 'per_page' : f'{entries}', 'page' : f'{page}'}
         response_raw = requests.get(f'{self.api_url}/groups', params=parameters)
         response = response_raw.json()
-        print('RESPONSE: \n' + str(response['response']))
         self.groups_raw = response['response']
         self.group_ids = []
         self.groups = dict()
