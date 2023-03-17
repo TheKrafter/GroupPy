@@ -1,4 +1,6 @@
 # GroupPy
+[![Daily Python Test and Lint](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint-and-test.yml/badge.svg)](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint-and-test.yml)
+
 A Python Library for interacting with the GroupMe Rest API, intended for clients (not bots).
 
 ### Purpose
