@@ -1,5 +1,7 @@
-# Storing client ID in testing
+# Files from testing
 client_id.txt
+access_token.txt
+result.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

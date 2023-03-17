@@ -10,14 +10,20 @@ class UserDidNotAuthenticate(Exception):
     pass
 
 class GroupMeClient:
-    def __init__(self, client_id, oauth_wait_time=60, oauth_wait_till_success=True, access_token=None, app_name='GroupPy'):
+    def __init__(self, token, oauth_complete=False, oauth_wait_time=60, oauth_wait_till_success=True, app_name='GroupPy'):
         # Establish URL
         self.api_url = 'https://api.groupme.com/v3'
-        self.client_id = client_id
+
+        # Token Info
+        if oauth_complete:
+            self.access_token = token
+            self.client_id = None
+        else:
+            self.client_id = token
+            self.access_token = None
         
         # Some Settings:
         self.oauth_wait_time = oauth_wait_time
-        self.access_token = access_token
         self.app_name = app_name
         self.oauth_wait_till_success = oauth_wait_till_success
 
