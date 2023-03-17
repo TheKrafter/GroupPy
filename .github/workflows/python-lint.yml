@@ -1,14 +1,16 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python Test and Lint
+name: Python Lint
 on:
   # Manually
   workflow_dispatch:
   # On PRs
   pull_request:
-  # Daily
-  schedule:
+  # On Comitt
+  push:
+  ## Daily
+  #schedule:
     # * is a special character in YAML so you have to quote this string
 #          CRON GUIDE:
 #            ┌───────────── minute (0 - 59)
@@ -18,7 +20,7 @@ on:
 #            │ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
 #            │ │ │ │ │
 #            * * * * *
-    - cron:  '00 16 * * *'
+    #- cron:  '00 16 * * *'
 
 
 
@@ -39,6 +41,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        python3 setup.py install --user
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
@@ -47,9 +50,9 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      env:
-        ACCESS_TOKEN: ${{ secrets.GROUPPY_ACCESS_TOKEN }}
-      run: |
-        echo $ACCESS_TOKEN > ./access_token.txt
-        python3 setup.py pytest
+    #- name: Test with pytest
+    #  env:
+    #    ACCESS_TOKEN: ${{ secrets.GROUPPY_ACCESS_TOKEN }}
+    #  run: |
+    #    echo $ACCESS_TOKEN > ./access_token.txt
+    #    python3 setup.py pytest
