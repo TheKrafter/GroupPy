@@ -82,7 +82,7 @@ class GroupMeClient:
         # Check if authentication was completed
         if GuliVariable("grouppy.access_token").get() == None:
             if self.oauth_wait_till_success:
-                message = 'User appeared to finish authentication, but didnt! (This should never happen)'
+                message = 'User appeared to finish authentication, but didn\'t! (This should never happen)'
             elif self.oauth_wait_time <= 0:
                 message = 'User did not finish authentication within the timeout.'
             else:
@@ -109,14 +109,14 @@ class GroupMeClient:
         response_raw = requests.get(f'{self.api_url}/groups', params=parameters)
         response = response_raw.json()
         print('RESPONSE: \n' + str(response['response']))
-        pass
         self.groups_raw = response['response']
         self.group_ids = []
-        self.groups = {}
-        for group in self.groups:
-            self.group_ids.append(self.groups_raw[group['id']])
+        self.groups = dict()
+        for group in self.groups_raw:
+            self.group_ids.append(group['id'])
             group_id = group['id']
             print(f'ID: { group_id }\nCONTENT: {group}')
             self.groups[group['id']] = group
+        return True
 
         
