@@ -1,5 +1,5 @@
 # GroupPy
-[![Python Test and Lint](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint-and-test.yml/badge.svg)](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint-and-test.yml)
+[![Python Lint](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint.yml/badge.svg)](https://github.com/TheKrafter/GroupPy/actions/workflows/python-lint.yml)
 
 A Python Library for interacting with the GroupMe Rest API, intended for clients (not bots).
 
