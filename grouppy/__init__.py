@@ -161,6 +161,23 @@ class GroupMeClient:
             data = response.json()
             return data.get('response', [])
     
+    def send_message(self, group_id, text):
+        url = f'{self.api_url}/groups/{group_id}/messages'
+        data = {
+            'message': {
+                'text': text
+            }
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Access-Token': self.access_token
+        }
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code != 202:
+            print(f'Error sending message: {response.content}')
+        else:
+            print('Message sent successfully')
+    
     def react_to_message(self, group_id, message_id, reaction_type):
         url = f'{self.api_url}/groups/{group_id}/messages/{message_id}/like'
         data = {
