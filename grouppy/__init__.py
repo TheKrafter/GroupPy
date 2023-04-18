@@ -1,10 +1,11 @@
-import requests # For API Requests
-import webbrowser # For opening browser during OAuth
-from flask import Flask, request # For accepting oauth
-import time # to wait for oauth
-from multiprocessing import Process # run things simultaneously
+import requests
+import webbrowser
+import json
+import websocket
+from flask import Flask, request
+import time
+from multiprocessing import Process
 from guli import GuliVariable
-from logging42 import logger
 
 # Exceptions
 class UserDidNotAuthenticate(Exception):
@@ -176,5 +177,26 @@ class GroupMeClient:
         else:
             print('Reaction added successfully')
             return True
+
+class GroupMeListener:
+    def __init__(self, access_token):
+        self.access_token = access_token
+        self.ws = None
     
+    def connect(self):
+        url = f"wss://push.groupme.com/faye?token={self.access_token}&user_id={self.user_id}"
+        self.ws = websocket.WebSocketApp(url, on_message=self.on_message)
+        self.ws.run_forever()
+    
+    def on_message(self, ws, message):
+        data = json.loads(message)
+        if data["channel"] == "/meta/connect":
+            if data["successful"]:
+                print("Connected to GroupMe WebSocket API")
+        elif data["channel"].startswith("/meta/"):
+            pass
+        else:
+            # Handle incoming message, reaction, or group data
+            return data
+            
     
