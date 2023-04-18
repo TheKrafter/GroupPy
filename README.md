@@ -3,10 +3,10 @@
 
 A Python Library for interacting with the GroupMe Rest API, intended for clients (not bots).
 
-#### ⚠️ Warning!: This project is nowhere near complete! It doesnt even work yet :(
+#### ⚠️ Warning!: This project is still in beta
 
 ### Purpose
-This project is intended for use with making GroupMe clients, and intends to make it easier to do so. It fetches data via the REST api, and organizes it into pythonic formats. 
+This project is intended for use with making GroupMe clients, and intends to make it easier to do so. It fetches data via the REST api, and can listen for new messages via a websocket.
 
 ### Roadmap
 See the ["GroupMe 1.0" Project](https://github.com/users/TheKrafter/projects/1)
