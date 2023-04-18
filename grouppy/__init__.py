@@ -4,6 +4,7 @@ from flask import Flask, request # For accepting oauth
 import time # to wait for oauth
 from multiprocessing import Process # run things simultaneously
 from guli import GuliVariable
+from logging42 import logger
 
 # Exceptions
 class UserDidNotAuthenticate(Exception):
@@ -99,32 +100,81 @@ class GroupMeClient:
 
         # Save token as variable
         self.access_token = GuliVariable("grouppy.access_token").get()
-        GuliVariable("grouppy.access_token").setValue(None) # anc clear for security
+        GuliVariable("grouppy.access_token").setValue(None) # and clear for security
     
     def authenticate_confirm(self):
         """ Confirm Authentication Instead of Waiting for timeout """
         self.authenticate_confirm = True
     
-    def get_groups(self, entries=200, page=1):
+    def get_groups(self, entries=50, page=1):
         """ Fetch Groups from the API """
-        parameters = { 'access_token' : self.access_token, 'per_page' : f'{entries}', 'page' : f'{page}'}
-        response_raw = requests.get(f'{self.api_url}/groups', params=parameters)
-        response = response_raw.json()
-        try:
-            self.groups_raw = response['response']
-        except KeyError:
-            try:
-                error_code = response['meta']['code']
-                error_list = sum(response['meta']['errors'])
-                raise InvalidResponse(f'{error_code}: {error_list}')
-            except KeyError:
-                raise InvalidResponse('API Response was invalid')
-        self.group_ids = []
-        self.groups = dict()
-        for group in self.groups_raw:
-            self.group_ids.append(group['id'])
-            group_id = group['id']
-            self.groups[group['id']] = group
-        return True
+        parameters = { 
+            'per_page' : f'{entries}',
+            'page' : f'{page}'
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Access-Token': self.access_token
+        }
+        response_raw = requests.get(f'{self.api_url}/groups', params=parameters, headers=headers)
+        if response.status_code != 200:
+            # Error fetching groups!
+            return []
+        else:
+            data = response.json()
+            return data.get('response', [])
 
-        
+    def create_group(self, name, description=None, image_url=None):
+        """ Create a new Group """
+        url = f'{self.api_url}/groups'
+        data = {
+            'name': name,
+            'description': description,
+            'image_url': image_url
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Access-Token': self.access_token
+        }
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code != 201:
+            print(f'Error creating group: {response.content}')
+            return False
+        else:
+            data = response.json()
+            print(f'Group "{data.get("name")}" created successfully')  
+            return True
+
+    def get_messages(self, group_id, limit=100):
+        """ Get messages from a group"""
+        url = f'{self.api_url}/groups/{group_id}/messages'
+        params = {
+            'limit': limit,
+            'token': self.access_token
+        }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f'Error fetching messages: {response.content}')
+            return []
+        else:
+            data = response.json()
+            return data.get('response', [])
+    
+    def react_to_message(self, group_id, message_id, reaction_type):
+        url = f'{self.api_url}/groups/{group_id}/messages/{message_id}/like'
+        data = {
+            'type': reaction_type
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Access-Token': self.access_token
+        }
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code != 200:
+            print(f'Error reacting to message: {response.content}')
+            return False
+        else:
+            print('Reaction added successfully')
+            return True
+    
+    
