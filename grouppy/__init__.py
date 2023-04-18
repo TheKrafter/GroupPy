@@ -117,7 +117,7 @@ class GroupMeClient:
             'Content-Type': 'application/json',
             'X-Access-Token': self.access_token
         }
-        response_raw = requests.get(f'{self.api_url}/groups', params=parameters, headers=headers)
+        response = requests.get(f'{self.api_url}/groups', params=parameters, headers=headers)
         if response.status_code != 200:
             # Error fetching groups!
             return []
@@ -198,5 +198,5 @@ class GroupMeListener:
         else:
             # Handle incoming message, reaction, or group data
             return data
-            
+
     
