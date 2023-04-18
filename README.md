@@ -19,5 +19,6 @@ Code copyright (c) 2023 Krafter and Contributors. Available under the terms of t
 OAuth - https://dev.groupme.com/tutorials/oauth
 REST API - https://dev.groupme.com/docs/v3
 How Responses are Structured - https://dev.groupme.com/docs/responses
+Community Docs - https://github.com/groupme-js/GroupMeCommunityDocs/
 
  -->
