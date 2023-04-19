@@ -195,6 +195,7 @@ class GroupMeClient:
             print('Reaction added successfully')
             return True
 
+"""
 class GroupMeListener:
     def __init__(self, access_token):
         self.access_token = access_token
@@ -215,5 +216,59 @@ class GroupMeListener:
         else:
             # Handle incoming message, reaction, or group data
             return data
+"""
+
+class GroupMeListener:
+    message_handlers = []
+
+    def __init__(self, access_token):
+        self.access_token = access_token
+        self.ws = None
+
+        # Get User ID
+    
+    def connect(self):
+        url = f"wss://push.groupme.com/faye?token={self.access_token}&user_id={self.user_id}"
+        self.ws = websocket.WebSocketApp(url, on_message=self.on_message)
+        self.ws.run_forever()
+
+    @classmethod
+    def on_message(cls, handler):
+        cls.message_handlers.append(handler)
+        return handler
+    
+    def handle_message(self, data):
+        for handler in self.message_handlers:
+            handler(self, data)
+    
+    def dispatch(self, event_name, data):
+        if event_name == "message":
+            self.handle_message(data)
+
+    def on_event(self, event_name, handler):
+        if event_name == "message":
+            self.on_message(handler)
+    
+    def on_disconnect(self, handler):
+        pass
+    
+    def on_connect(self, handler):
+        pass
+    
+    def on_error(self, handler):
+        pass
+
+    def on_close(self, handler):
+        pass
+    
+    def on_pong(self, handler):
+        pass
+    
+    def on_ping(self, handler):
+        pass
+    
+    def on_send(self, handler):
+        pass
+
 
     
