@@ -195,7 +195,7 @@ class GroupMeClient:
             print('Reaction added successfully')
             return True
 
-"""
+
 class GroupMeListener:
     def __init__(self, access_token):
         self.access_token = access_token
@@ -206,7 +206,8 @@ class GroupMeListener:
         self.ws = websocket.WebSocketApp(url, on_message=self.on_message)
         self.ws.run_forever()
     
-    def on_message(self, ws, message):
+    def on_message(self, function):
+        """ On Message Event. Called when a message is recieved through the websocket. """
         data = json.loads(message)
         if data["channel"] == "/meta/connect":
             if data["successful"]:
@@ -215,7 +216,7 @@ class GroupMeListener:
             pass
         else:
             # Handle incoming message, reaction, or group data
-            return data
+            function(data)
 """
 
 class GroupMeListener:
@@ -248,27 +249,7 @@ class GroupMeListener:
     def on_event(self, event_name, handler):
         if event_name == "message":
             self.on_message(handler)
-    
-    def on_disconnect(self, handler):
-        pass
-    
-    def on_connect(self, handler):
-        pass
-    
-    def on_error(self, handler):
-        pass
-
-    def on_close(self, handler):
-        pass
-    
-    def on_pong(self, handler):
-        pass
-    
-    def on_ping(self, handler):
-        pass
-    
-    def on_send(self, handler):
-        pass
+    """
 
 
     
