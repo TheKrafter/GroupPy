@@ -8,8 +8,7 @@ token = input('> Paste your access token: ')
 listener = GroupMeListener(token)
 
 @listener.on_message
-def handle_message(listener, data):
+def handle_message(data):
     print(data)
-    pass
 
 listener.connect()
