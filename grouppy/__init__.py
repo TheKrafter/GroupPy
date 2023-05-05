@@ -49,7 +49,7 @@ class GroupMeClient:
             <body style="font-family:Cantarell,Sans-serif;padding-top:30px;">
                 <center>
                     <h3><strong>Success!</strong></h3>
-                    <h4>You may now close this window.</h4>
+                    <h4>You may now safely close this window.</h4>
                 </center>
             </body>
         <html>
