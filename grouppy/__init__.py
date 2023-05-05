@@ -31,6 +31,9 @@ class GroupMeClient:
         self.app_name = app_name
         self.oauth_wait_till_success = oauth_wait_till_success
 
+        # Mutables
+        self.latest_message = {}
+
     def authenticate(self):
         """ Authenticate with GroupMe """
         webbrowser.open(f'https://oauth.groupme.com/oauth/authorize?client_id={self.client_id}')
@@ -159,7 +162,21 @@ class GroupMeClient:
             return []
         else:
             data = response.json()
+            self.latest_message[group_id] = data.get('response', [])["messages"][-1]["id"]
+            print(f'LAST MESSAGE: {self.latest_message}')
             return data.get('response', [])
+
+    def get_messages_new(self, group_id, limit=100):
+        """ Get messages since the latest one 
+        Returns:
+         - `None` if no messages are found
+         - Normal dict response """
+        url = f'{self.api_url}/groups/{group_id}/messages'
+        params = {
+            'limit': limit,
+            'token': self.access_token,
+            'since_id': ''
+        }
     
     def send_message(self, group_id, text):
         url = f'{self.api_url}/groups/{group_id}/messages'
