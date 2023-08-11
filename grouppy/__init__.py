@@ -127,6 +127,21 @@ class GroupMeClient:
         else:
             data = response.json()
             return data.get('response', [])
+    
+    def get_group(self, id):
+        """ Fetch a Specific Group from the API by ID """
+        url = f'{self.api.url}/groups/{id}'
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Access-Token': self.access_token
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            # Error fetching groups!
+            return []
+        else:
+            data = response.json()
+            return data.get('response', [])
 
     def create_group(self, name, description=None, image_url=None):
         """ Create a new Group """
