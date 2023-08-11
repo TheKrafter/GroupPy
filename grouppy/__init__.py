@@ -163,7 +163,6 @@ class GroupMeClient:
         else:
             data = response.json()
             self.latest_message[str(group_id)] = data.get('response', [])["messages"][-1]["id"]
-            print(f'LAST MESSAGE: {self.latest_message}')
             return data.get('response', [])
 
     def get_messages_new(self, group_id, limit=100):
@@ -177,6 +176,14 @@ class GroupMeClient:
             'token': self.access_token,
             'since_id': self.latest_message[str(group_id)]
         }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f'Error fetching messages: {response.content}')
+            return []
+        else:
+            data = response.json()
+            self.latest_message[str(group_id)] = data.get('response', [])["messages"][-1]["id"]
+            return data.get('response', [])
     
     def send_message(self, group_id, text):
         url = f'{self.api_url}/groups/{group_id}/messages'
