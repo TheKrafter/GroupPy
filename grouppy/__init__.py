@@ -130,7 +130,7 @@ class GroupMeClient:
     
     def get_group(self, id):
         """ Fetch a Specific Group from the API by ID """
-        url = f'{self.api.url}/groups/{id}'
+        url = f'{self.api_url}/groups/{id}'
         headers = {
             'Content-Type': 'application/json',
             'X-Access-Token': self.access_token
