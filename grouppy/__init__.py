@@ -162,7 +162,7 @@ class GroupMeClient:
             return []
         else:
             data = response.json()
-            self.latest_message[group_id] = data.get('response', [])["messages"][-1]["id"]
+            self.latest_message[str(group_id)] = data.get('response', [])["messages"][-1]["id"]
             print(f'LAST MESSAGE: {self.latest_message}')
             return data.get('response', [])
 
@@ -175,7 +175,7 @@ class GroupMeClient:
         params = {
             'limit': limit,
             'token': self.access_token,
-            'since_id': ''
+            'since_id': self.latest_message[str(group_id)]
         }
     
     def send_message(self, group_id, text):
