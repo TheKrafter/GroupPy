@@ -1,4 +1,4 @@
-
+import websocket
 
 class GroupMeListener:
     def __init__(self, access_token):
@@ -10,7 +10,7 @@ class GroupMeListener:
         self.ws = websocket.WebSocketApp(url, on_message=self.on_message)
         self.ws.run_forever()
     
-    def on_message(self, function):
+    def on_message(self, function, message):
         """ On Message Event. Called when a message is recieved through the websocket. """
         data = json.loads(message)
         if data["channel"] == "/meta/connect":
