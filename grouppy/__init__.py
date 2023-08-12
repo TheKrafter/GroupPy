@@ -197,7 +197,7 @@ class GroupMeClient:
             return []
         else:
             data = response.json()
-            self.latest_message[str(group_id)] = data.get('response', [])["messages"][-1]["id"]
+            self.latest_message[str(group_id)] = data.get('response', [])["messages"][0]["id"]
             return data.get('response', [])
     
     def send_message(self, group_id, text):
